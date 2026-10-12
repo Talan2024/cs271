@@ -13,4 +13,11 @@ CHIP DMux {
 
     PARTS:
     //// Replace this comment with your code.
+    Or(a=in , b=sel , out=OrA );
+    Not(in=sel , out= notsel);
+    Or(a= in, b = notsel , out = OrB);
+    And(a= OrA, b= notsel , out= a);
+    And(a= OrB, b= sel , out=b );
+  
+
 }

@@ -19,4 +19,40 @@ CHIP DMux8Way {
 
     PARTS:
     //// Replace this comment with your code.
+    Not(in=sel[0], out = notsel0);
+    Not(in=sel[1] , out=notsel1);
+    Not(in=sel[2], out=notsel2);
+    Not(in=in,out=notin);
+
+    Or(a=notin, b = sel[2], out=notAorB);
+    Or(a=notAorB, b=sel[1], out= notAorBorC);
+    Or(a=notAorBorC, b = sel[0],out=notA);
+    Not(in=notA,out = a);
+
+    Or(a=notAorBorC , b=notsel0, out=notB);
+    Not(in=notB, out = b);
+
+    Or(a=notAorB,b = notsel1 , out=notCorD);
+    Or(a=notCorD ,b=sel[0], out= notC);
+    Not(in=notC, out=c);
+
+    Or(a=notCorD, b = notsel0, out = notD);
+    Not(in=notD , out=d);
+
+    Or(a=notin ,b=notsel2, out=notEorF);
+    Or(a=notEorF, b =sel[1] , out=notEorForG);
+    Or(a=notEorForG , b=sel[0],out = notE);
+    Not(in=notE, out =e);
+
+    Or(a=notEorForG, b = notsel0, out=notF);
+    Not(in=notF ,out=f);
+
+    Or(a=notEorF ,b=notsel1, out = notGorH);
+    Or(a=notGorH,b=sel[0] ,out=notG);
+    Not(in=notG, out = g);
+
+    Or(a=notGorH,b=notsel0,out=notH);
+    Not(in=notH,out = h);
+    
+
 }

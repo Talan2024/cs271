@@ -15,4 +15,23 @@ CHIP DMux4Way {
 
     PARTS:
     //// Replace this comment with your code.
+    Not(in=sel[0], out=notsel0);
+    Not(in=sel[1], out = notsel1);
+    Not(in=in,out=notin);
+
+    Or(a=notin,b = sel[1], out=notAorB);
+    Or(a=notAorB , b=sel[0], out = notA);
+    Not(in=notA, out = a);
+
+    Or(a=notAorB,b=notsel0 ,out=notB);
+    Not(in=notB ,out = b);
+
+    Or(a=notin , b=notsel1, out= notCorD);
+    Or(a=notCorD, b = sel[0],out=notC);
+    Not(in=notC , out=c);
+
+    Or(a=notCorD, b=notsel0,out=notD);
+    Not(in=notD,out=d);
+   
+
 }
