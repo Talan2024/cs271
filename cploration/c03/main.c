@@ -34,7 +34,7 @@ int main(int argc, const char *argv[]){
 
   while (fgets(line, sizeof(line), fin)){
     line_sum = line_sum + 1;
-    printf("Line number [%04d] %s", line_sum, line);
+    printf("[%04d] %s", line_sum, line);
     fprintf(fout, "%s", line);
 
   }
