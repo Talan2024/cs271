@@ -14,4 +14,33 @@ CHIP RAM8 {
 
     PARTS:
     //// Replace this comment with your code.
+    
+    //selecting to read or write
+    Mux16(a=out0, b=in, sel=load, out=registerIn);
+    //Select which register to write to
+    DMux8Way(in=true, sel=address, a=sel0, b=sel1, c=sel2, d=sel3, e=sel4, f=sel5, g=sel6, h=sel7);
+
+
+    // Enable the selected register only when load is true
+    And(a=load, b=sel0, out=load0);
+    And(a=load, b=sel1, out=load1);
+    And(a=load, b=sel2, out=load2);
+    And(a=load, b=sel3, out=load3);
+    And(a=load, b=sel4, out=load4);
+    And(a=load, b=sel5, out=load5);
+    And(a=load, b=sel6, out=load6);
+    And(a=load, b=sel7, out=load7);
+    
+    // Store data in each register when its load signal is true
+    Register(in=registerIn, load=load0, out=out0);
+    Register(in=registerIn, load=load1, out=out1);
+    Register(in=registerIn, load=load2, out=out2);
+    Register(in=registerIn, load=load3, out=out3);
+    Register(in=registerIn, load=load4, out=out4);
+    Register(in=registerIn, load=load5, out=out5);
+    Register(in=registerIn, load=load6, out=out6);
+    Register(in=registerIn, load=load7, out=out7);
+
+    //Select which registers value to output based on the address
+    Mux8Way16(a=out0, b=out1, c=out2, d=out3, e=out4, f=out5, g=out6, h=out7, sel=address, out=out);
 }
