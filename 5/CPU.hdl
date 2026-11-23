@@ -33,4 +33,68 @@ CHIP CPU {
 
     PARTS:
 	//// Replace this comment with your code.
+
+    //Decode Mux is instruction[15]
+    //check A Register load 
+    Not(in=instruction[15] , out=Ainstructionfixed );
+
+    //A path
+    //select data going into A register
+    Mux16(a=instruction, b=aluoutput, sel=instruction[15], out=Aregout);
+
+    //Cpath
+    Mux(a=false, b=true, sel=instruction[15], out=Cpath);
+
+    //load A reg
+    Mux(a=false, b=instruction[5], sel=Cpath, out=loadrega);
+    Or(a=Ainstructionfixed, b=loadrega, out=loadA);
+
+    //load D reg
+    Mux(a=false, b=instruction[4], sel=Cpath, out=loadregd);
+
+    //allow write m
+    Mux(a=false, b=instruction[3], sel=Cpath, out=writeM);
+
+    //a register
+    ARegister(in=Aregout , load=loadA , out=Areg );
+
+    //d resgister 
+    DRegister(in=aluoutput, load=loadregd, out=Dreg);
+
+    //a or m
+    Mux16(a=Areg, b=inM, sel=instruction[12], out=aormoutput);
+
+    //ALU
+    ALU(x=Dreg,y=aormoutput,zx=instruction[11],nx=instruction[10],zy=instruction[9],ny=instruction[8],f=instruction[7],no=instruction[6],out=aluoutput,out=outM,zr=zr, ng=ng);
+
+    //check if ALU result is positive
+    Not(in=zr, out=notzr);
+    Not(in=ng, out=notng);
+    And(a=notzr, b=notng, out=positive);
+
+    //JLT
+    And(a=instruction[2], b=ng, out=jlt);
+
+    //JEQ
+    And(a=instruction[1], b=zr, out=jeq);
+
+    //JGT
+    And(a=instruction[0], b=positive, out=jgt);
+
+    //combine JMP conditions
+    Or(a=jlt, b=jeq, out=jump1);
+    Or(a=jump1, b=jgt, out=jump);
+
+    //only allow jumps during c instruction
+    And(a=Cpath, b=jump, out=validjump);
+
+    //pc
+    PC(in=Areg, load=validjump, inc=true, reset=reset, out=pcfull);
+
+    //triming down to 15 bits
+    //addressM
+    Or16(a=Areg, b=false, out[0..14]=addressM);
+
+    //pc output
+    Or16(a=pcfull, b=false, out[0..14]=pc);
 }

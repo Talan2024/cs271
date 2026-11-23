@@ -14,8 +14,8 @@
  * available through the out output from the next time step onward.
  * Address space rules:
  * Only the upper 16K+8K+1 words of the Memory chip are used. 
- * Access to address>0x6000 is invalid. Access to any address in 
- * the range 0x4000-0x5FFF results in accessing the screen memory 
+ * Access to address>0x6000 is invalid and reads 0. Access to any address
+ * in the range 0x4000-0x5FFF results in accessing the screen memory 
  * map. Access to address 0x6000 results in accessing the keyboard 
  * memory map. The behavior in these addresses is described in the Screen
  * and Keyboard chip specifications given in the lectures and the book.
@@ -26,4 +26,38 @@ CHIP Memory {
 
     PARTS:
 	//// Replace this comment with your code.
+
+    //check if it is keyboard
+    Or8Way(in=address[0..7] , out= anyLowBit  );
+    Or8Way(in=address[5..12] , out= midBitsNonZero  );
+    Or(a=anyLowBit , b=midBitsNonZero , out=lower13NonZero  );
+    Not(in=lower13NonZero, out=lower13AllZero );
+    And(a=address[13], b=address[14] , out= topTwoBitsOne);
+    And(a=lower13AllZero , b=topTwoBitsOne, out= isKeyboard  );
+
+    //check if it is screen
+    Not(in=address[13] , out= notAddr13);
+    And(a=notAddr13 , b=address[14], out=isScreen );
+   
+
+    //check where address is going to
+    Mux16(a=ramout , b=screenout , sel=isScreen , out=screenOrRam );
+    Mux16(a=screenOrRam , b=keyboardout , sel=isKeyboard , out= validOut);
+
+    //invalid address check
+    And(a= topTwoBitsOne , b= lower13NonZero , out= invalidaddresscheck);
+    Mux16(a=validOut , b=false , sel=invalidaddresscheck , out=out );
+
+
+    //write bit
+    And(a=load  , b= isScreen, out= loadScreen);
+
+    Not(in=address[14], out=isRam);
+    And(a=load, b=isRam, out=loadRam);
+
+
+    RAM16K(in=in , load= loadRam, address=address[0..13] , out=ramout );
+    Screen(in= in, load=loadScreen , address=address[0..12] , out=screenout );
+    Keyboard(out= keyboardout);
+    
 }
