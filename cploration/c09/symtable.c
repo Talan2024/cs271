@@ -17,8 +17,8 @@ void symtable_insert(char* key, hack_addr addr){
 	
 	
 	Symbol *item = (Symbol*) malloc(sizeof(Symbol));
-	char *name = strdup(key);
-    item->name = name;
+	item->name = (char*)malloc(strlen(key) + 1);
+	strcpy(item->name, key);
     item->addr = addr;
 
     //get the hash 

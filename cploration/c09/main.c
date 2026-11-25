@@ -1,4 +1,4 @@
-	/****************************************
+/****************************************
  * C-ploration 4 for CS 271
  * 
  * [NAME] Talan Aria
@@ -22,8 +22,7 @@ int main(int argc, const char *argv[])
 	}
 	
 	parse(fin);
-	
-    
+    symtable_print_labels();
 	fclose(fin);
 	
 	return 0;
